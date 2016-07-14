@@ -1,44 +1,48 @@
 datastore:
   build: .
+  restart: always
   volumes:
-    - /srv/data/Video/Concerts:/data
+    - /home/ktiedt/Plex:/home/ktiedt/Plex
 sabnzbd:
-  image: funkypenguin/sabnzbd
+  image: ktiedt/sabnzbd
+  restart: always
   volumes:
-    - sabnzbd:/config
+    - /home/ktiedt/.htpc-suite/sabnzbd:/config
   volumes_from:
     - datastore
   ports:
-    - 8081:8080
-  links:
-    - plex
+    - 9000:8080
 couchpotato:
-  image: funkypenguin/couchpotato
+  image: ktiedt/couchpotato
+  restart: always
   volumes:
-    - couchpotato:/config
+    - /home/ktiedt/.htpc-suite/couchpotato:/config
   volumes_from:
     - datastore
   ports:
-    - 5051:5050
+    - 9002:5050
   links:
     - sabnzbd
-    - plex
 plex:
-  image: funkypenguin/plex
+  image: ktiedt/plex
+  restart: always
   volumes:
-    - plex:/config
+    - /home/ktiedt/.htpc-suite/plex:/config
   volumes_from:
     - datastore
   ports:
-    - 32402:32400
+    - 32400:32400
 nzbdrone:
-  image: funkypenguin/nzbdrone
+  image: ktiedt/nzbdrone
+  restart: always
+  environment:
+    - XDG_CONFIG_HOME=/config
   volumes:
-    - nzbdrone:/config
+    - /home/ktiedt/.htpc-suite/nzbdrone:/config
+    - /home/ktiedt/Plex:/home/ktiedt/Plex
   volumes_from:
     - datastore
   ports:
-    - 8990:8989
+    - 9001:8989
   links:
     - sabnzbd
-    - plex
